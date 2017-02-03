@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">HttpPostDemo</string>
+    <string name="add_user">AddUser</string>
+    <string name="problem_request">ProblemRequest</string>
+    <string name="hint">Please input a problem number.</string>
+</resources>
