@@ -1,10 +1,12 @@
 package cn.edu.sjtu.wenbo1188.httppostdemo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
     private String protocol = "http://";
     private Handler handler = new Handler();
     private TextView textView;
+    private Button button;
+    private DrawHookView cycle;
+    private String response_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,23 +30,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void SendRequestPost(final String address, final String content){
-        textView = (TextView) findViewById(R.id.text);
-        new Thread(new Runnable() {
+    public int SendRequestPost(final String address, final String content){
+        new Thread(new Runnable(){
             @Override
             public void run() {
-                //从网络获取数
-                final String response = NetUtils.post(address, content);
-                //向Handler发送处理操作
+                String response = NetUtils.post(address, content);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        //在UI线程更新UI
-                        textView.setText(response);
+
                     }
                 });
             }
         }).start();
+
+        return 200;
     }
 
     public void ProblemRequest(View view){
@@ -53,10 +56,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void AddUser(View view){
-        for (int i = 0;i < table.length;++i){
+        int response_code;
+        int len = table.length;
+        int count = 0;
+        for (int i = 0;i < len;++i){
             String address = protocol + ip_address + "/add_user";
             String content = "name=" + table[i][0] + "&address=" + table[i][1] + "&skills=" + table[i][2];
-            SendRequestPost(address, content);
+            response_code = SendRequestPost(address, content);
+            if (response_code == 200){
+                ++count;
+            }
+        }
+        if (count == len){
+            button = (Button)findViewById(R.id.add_user);
+            cycle = (DrawHookView)findViewById(R.id.cycle);
+            button.setBackgroundColor(Color.parseColor("#00FF00"));
+            cycle.setVisibility(View.VISIBLE);
+        }
+        else{
+            button = (Button)findViewById(R.id.add_user);
+            cycle = (DrawHookView)findViewById(R.id.cycle);
+            button.setBackgroundColor(Color.parseColor("#FF0000"));
         }
     }
 }
